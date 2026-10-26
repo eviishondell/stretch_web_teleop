@@ -195,7 +195,7 @@ if __name__ == "__main__":
         get_package_share_directory("stretch_web_teleop"),
         "config",
     )
-    config_src_dir = os.path.expanduser("~/ament_ws/src/stretch_web_teleop/config")
+    config_src_dir = os.path.expanduser("~/evolone_ws/src/stretch_web_teleop/config")
     readline.read_history_file(os.path.join(config_share_dir, history_filename))
     readline.set_completer(HistoryCompleter().complete)
     readline.parse_and_bind("tab: complete")
