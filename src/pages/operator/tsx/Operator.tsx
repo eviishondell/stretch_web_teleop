@@ -39,7 +39,9 @@ import {
 import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
 import { useManualIntent } from "./primitives/intent";
-import { withoutHardwareControlTabs } from "./primitives/hardwareTabs";
+import { layoutForOperation } from "./primitives/layoutFilters";
+import { SafetyControls } from "./static_components/SafetyControls";
+import "operator/css/Theme.css";
 import { PrimitivePanel, TaskPhaseDropdown } from "./primitives/PrimitivePanel";
 import "operator/css/Operator.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
@@ -357,6 +359,7 @@ export const Operator = (props: {
                     onChange={setPhaseId}
                     disabled={customizing}
                 />
+                {!customizing && <SafetyControls />}
                 <CustomizeButton
                     customizing={customizing}
                     onClick={handleToggleCustomize}
@@ -462,13 +465,16 @@ export const Operator = (props: {
             </div>
             <div id="operator-body">
                 {/* Customize mode edits the stored layout by path, so it always
-                    sees the full layout. With a task phase active, the
-                    hardware control tabs give way to the primitive panel. */}
+                    sees the full layout. While operating, safety moves to the
+                    header and, with a task phase active, the hardware control
+                    tabs give way to the primitive panel. */}
                 <LayoutArea
                     layout={
-                        customizing || !intent
+                        customizing
                             ? layout.current
-                            : withoutHardwareControlTabs(layout.current)
+                            : layoutForOperation(layout.current, {
+                                  hideHardwareControls: !!intent,
+                              })
                     }
                     sharedState={sharedState}
                 />

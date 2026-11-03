@@ -33,10 +33,7 @@ export const PrimitivePanel = (props: {
 
     return (
         <section className="primitive-panel" aria-label="Task controls">
-            <header className="primitive-panel__header">
-                <span className="primitive-panel__eyebrow">Current task</span>
-                <h2 className="primitive-panel__phase">{payload.phaseLabel}</h2>
-            </header>
+            <h2 className="primitive-panel__phase">{payload.phaseLabel}</h2>
 
             <div className="primitive-panel__active">
                 {active.map((id) => (
@@ -57,12 +54,14 @@ export const PrimitivePanel = (props: {
                         props.onAcceptSuggestion(payload.suggestion!.id)
                     }
                 >
-                    Done? Switch to <strong>{payload.suggestion.label}</strong>
+                    <span className="primitive-panel__suggestion-title">
+                        Done here? Go to {payload.suggestion.label}
+                    </span>
                     {payload.likelyNext.length > 0 && (
                         <span className="primitive-panel__suggestion-detail">
                             {payload.likelyNext
                                 .map((id) => PRIMITIVES[id].label)
-                                .join(" · ")}
+                                .join(", ")}
                         </span>
                     )}
                 </button>

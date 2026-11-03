@@ -24,6 +24,11 @@ export class RunStopFunctionProvider extends FunctionProvider {
         this.runStopStateChangeCallback = callback;
     }
 
+    /** Current run-stop state, so newly mounted views start in sync. */
+    public get isEnabled(): boolean {
+        return !!this.enabled;
+    }
+
     public updateRunStopState(enabled: boolean): void {
         this.enabled = enabled;
         if (this.runStopStateChangeCallback)

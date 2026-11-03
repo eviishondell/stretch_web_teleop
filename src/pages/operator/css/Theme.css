@@ -1,0 +1,367 @@
+/*
+ * Operator theme — one layer on top of the stock styles.
+ *
+ * Color has one meaning each:
+ *   spruce = active / selected      red   = stop (run stop only)
+ *   amber  = focus & scan highlight ink   = text
+ * Remove the Theme.css import in Operator.tsx to return to stock styling.
+ */
+:root {
+    --mist: #eef2f1;
+    --paper: #ffffff;
+    --ink: #14262b;
+    --slate: #5e7177;
+    --line: #d5dedc;
+    --spruce: #1f5f57;
+    --spruce-soft: #e2ede9;
+    --stop: #c62d2d;
+    --scan: #f2a93b;
+
+    --r-control: 10px;
+    --r-surface: 14px;
+    --header-h: 4.5rem;
+    --gap: 1rem;
+
+    /* Retune stock tokens so untouched components follow the theme. */
+    --background-color: var(--mist);
+    --gray-bg: var(--paper);
+    --btn-gray: var(--paper);
+    --btn-blue: var(--spruce);
+    --btn-turquoise: var(--spruce);
+    --tab-inactive: transparent;
+    --selected-color: var(--scan);
+    --shadow: none;
+}
+
+body {
+    font-family:
+        "Atkinson Hyperlegible", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--mist);
+    font-size: 17px;
+}
+
+/* Buttons: flat, outlined, no hover dimming (dwell users rest on targets) */
+#operator button {
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    box-shadow: none;
+    border-radius: var(--r-control);
+    font-weight: 700;
+}
+
+#operator button:hover {
+    filter: none;
+    background: var(--spruce-soft);
+}
+
+#operator button:focus-visible {
+    outline: 4px solid var(--scan);
+    outline-offset: 2px;
+}
+
+#operator button.btn-blue,
+#operator button.btn-turquoise {
+    background: var(--spruce);
+    border-color: var(--spruce);
+    color: #ffffff;
+}
+
+/* Header ********************************************************************/
+#operator-header {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    height: var(--header-h);
+    padding: 0.75rem var(--gap);
+    gap: 0.75rem;
+    justify-content: flex-start;
+}
+
+#operator-header > *,
+#operator-header button {
+    height: 100%;
+}
+
+/* Speed: one segmented control rather than five loose buttons */
+#velocity-control-container {
+    display: flex;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    overflow: hidden;
+}
+
+#operator #velocity-control-container button {
+    width: 6.5rem;
+    border: none;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+    font-weight: 400;
+}
+
+#operator #velocity-control-container button:first-of-type {
+    border-left: none;
+}
+
+#operator #velocity-control-container button.btn-blue {
+    font-weight: 700;
+}
+
+/* Dropdowns */
+#operator .dropdown-button {
+    padding: 0 0.75rem 0 1rem;
+    gap: 0.5rem;
+}
+
+#operator .dropdown-button.expanded.bottom {
+    border-radius: var(--r-control);
+}
+
+#operator .dropdown-popup {
+    margin-top: 6px;
+    padding: 6px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    box-shadow: 0 12px 28px rgba(20, 38, 43, 0.14);
+}
+
+#operator .dropdown-popup .dropdown-option {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    margin: 2px 0;
+    text-align: left;
+    padding: 0 1rem;
+    border: none;
+    font-weight: 400;
+}
+
+#operator .dropdown-popup .dropdown-option.active {
+    background: var(--spruce-soft);
+    color: var(--spruce);
+    font-weight: 700;
+}
+
+#operator-header .task-phase-dropdown,
+#operator-header .dropdown {
+    width: 12.5rem;
+    height: 100%;
+}
+
+#operator .dropdown-button {
+    white-space: nowrap;
+}
+
+/* Empty row under the header (movement recorder / TTS when shown) */
+#operator-global-controls {
+    padding-top: 0;
+}
+
+#operator-global-controls:has(> :not([hidden])) {
+    padding-top: var(--gap);
+}
+
+#customize-button {
+    gap: 0.5rem;
+    width: auto;
+    padding: 0 1rem;
+}
+
+#customize-button span {
+    margin-right: 0;
+}
+
+/* Safety (header) ***********************************************************/
+.safety-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+}
+
+.battery-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    color: var(--slate);
+    white-space: nowrap;
+}
+
+.battery-chip__cells {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+}
+
+.battery-chip__cell {
+    width: 6px;
+    height: 12px;
+    border-radius: 1px;
+    background: transparent;
+}
+
+.battery-chip__cell.on {
+    background: var(--spruce);
+}
+
+.battery-chip.low {
+    color: var(--stop);
+}
+
+.battery-chip.low .battery-chip__cell.on {
+    background: var(--stop);
+}
+
+/* The run stop stays big: it must be the easiest target on screen. */
+#operator button.run-stop {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 11.5rem;
+    padding: 0 1.25rem;
+    background: var(--stop);
+    border-color: var(--stop);
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+#operator button.run-stop:hover {
+    background: #a92424;
+}
+
+.run-stop__icon {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 3px;
+    background: currentColor;
+}
+
+/* Engaged: inverts so "the robot is stopped" reads at a glance. */
+#operator button.run-stop.stopped {
+    background: var(--paper);
+    color: var(--stop);
+    border: 2px solid var(--stop);
+}
+
+#operator button.run-stop.stopped .run-stop__icon {
+    width: 0;
+    height: 0;
+    border-radius: 0;
+    background: none;
+    border-style: solid;
+    border-width: 0.5rem 0 0.5rem 0.85rem;
+    border-color: transparent transparent transparent currentColor;
+}
+
+/* Body **********************************************************************/
+#operator-body {
+    align-items: stretch;
+    gap: var(--gap);
+    padding: var(--gap);
+}
+
+#operator-body > #layout-area {
+    flex: 3 1 0;
+    padding: 0;
+}
+
+/* Panels (camera views, stock control tabs) */
+#operator .tabs-component {
+    margin-top: 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--r-surface);
+    overflow: hidden;
+}
+
+#operator .tabs-header {
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+}
+
+#operator .tabs-header > * {
+    flex: 0 0 auto;
+    background: transparent;
+}
+
+#operator .tab-button {
+    min-height: 3.25rem;
+    padding: 0 1rem;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--slate);
+}
+
+#operator .tab-button.active {
+    background: transparent;
+    color: var(--ink);
+    font-weight: 700;
+    border-bottom-color: var(--spruce);
+    box-shadow: none;
+}
+
+#operator .tabs-content {
+    border: none;
+    background: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #operator * {
+        transition: none !important;
+    }
+}
+
+/* Header fit: never wrap labels; drop the battery wording before anything
+   else when space runs out (the cells and aria-label remain). */
+#operator-header button,
+.battery-chip {
+    white-space: nowrap;
+}
+
+#operator-header .task-phase-dropdown,
+#operator-header .dropdown {
+    width: 11rem;
+}
+
+#operator #velocity-control-container button {
+    width: 5.75rem;
+}
+
+@media (max-width: 1500px) {
+    .battery-chip__label {
+        display: none;
+    }
+    #operator #velocity-control-container button {
+        width: 5rem;
+        padding: 0 0.25rem;
+    }
+}
+
+@media (max-width: 1250px) {
+    #customize-button {
+        font-size: 0;
+        gap: 0;
+    }
+    #customize-button svg {
+        font-size: 1.5rem;
+    }
+}
+
+/* Size dropdowns to their longest label so the chevron never clips. */
+#operator-header .task-phase-dropdown,
+#operator-header .dropdown {
+    width: auto;
+    min-width: 11rem;
+}
