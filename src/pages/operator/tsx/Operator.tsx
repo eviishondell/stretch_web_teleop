@@ -38,6 +38,9 @@ import {
 } from "./utils/layout_helpers";
 import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
+import { useProfileState } from "./profiles/useProfileState";
+import { applyProfile, countSecondaryTabs } from "./profiles/filterLayout";
+import { ProfileBar } from "./profiles/ProfileBar";
 import "operator/css/Operator.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot } from "./layout_components/HomeTheRobot";
@@ -49,6 +52,13 @@ export const Operator = (props: {
     storageHandler: StorageHandler;
 }) => {
     const [customizing, setCustomizing] = React.useState(false);
+    const {
+        profileId,
+        profile,
+        setProfileId,
+        showSecondary,
+        setShowSecondary,
+    } = useProfileState();
     const [selectedPath, setSelectedPath] = React.useState<string | undefined>(
         undefined
     );
@@ -430,6 +440,14 @@ export const Operator = (props: {
                 </div>
             )}
             <div id="operator-global-controls">
+                <ProfileBar
+                    profileId={profileId}
+                    onProfileChange={setProfileId}
+                    showSecondary={showSecondary}
+                    onToggleSecondary={() => setShowSecondary(!showSecondary)}
+                    secondaryCount={countSecondaryTabs(layout.current, profile)}
+                    disabled={customizing}
+                />
                 <div
                     className={className("operator-pose-recorder", {
                         hideLabels: !layout.current.displayLabels,
@@ -450,7 +468,16 @@ export const Operator = (props: {
                 </div>
             </div>
             <div id="operator-body">
-                <LayoutArea layout={layout.current} sharedState={sharedState} />
+                {/* Customize mode edits the stored layout by path, so it always
+                    sees the full layout; otherwise render the profile view. */}
+                <LayoutArea
+                    layout={
+                        customizing
+                            ? layout.current
+                            : applyProfile(layout.current, profile, showSecondary)
+                    }
+                    sharedState={sharedState}
+                />
             </div>
             <Sidebar
                 hidden={!customizing}
