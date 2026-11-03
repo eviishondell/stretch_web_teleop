@@ -28,6 +28,8 @@ export interface Primitive {
     label: string;
     /** One-line description of the goal, shown under the title. */
     goal: string;
+    /** Command whose icon represents the primitive as a whole. */
+    symbol: B;
     commands: PrimitiveCommand[];
 }
 
@@ -36,6 +38,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "navigate",
         label: "Navigate",
         goal: "Move the base to the target area",
+        symbol: B.BaseForward,
         commands: [
             { command: B.BaseForward, label: "Forward" },
             { command: B.BaseReverse, label: "Backward" },
@@ -45,6 +48,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "align",
         label: "Align",
         goal: "Turn to face the task",
+        symbol: B.BaseRotateLeft,
         commands: [
             { command: B.BaseRotateLeft, label: "Turn left" },
             { command: B.BaseRotateRight, label: "Turn right" },
@@ -54,6 +58,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "lift",
         label: "Lift",
         goal: "Raise or lower to line up with the object",
+        symbol: B.ArmLift,
         commands: [
             { command: B.ArmLift, label: "Raise" },
             { command: B.ArmLower, label: "Lower" },
@@ -63,6 +68,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "reach",
         label: "Reach",
         goal: "Extend toward or pull back from a space",
+        symbol: B.ArmExtend,
         commands: [
             { command: B.ArmExtend, label: "Extend" },
             { command: B.ArmRetract, label: "Retract" },
@@ -72,6 +78,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "orient",
         label: "Orient",
         goal: "Adjust the gripper angle",
+        symbol: B.WristPitchUp,
         commands: [
             { command: B.WristRotateIn, label: "Rotate in" },
             { command: B.WristRotateOut, label: "Rotate out" },
@@ -85,6 +92,7 @@ export const PRIMITIVES: Record<PrimitiveId, Primitive> = {
         id: "grip",
         label: "Grip",
         goal: "Open or close the gripper",
+        symbol: B.GripperClose,
         commands: [
             { command: B.GripperOpen, label: "Open" },
             { command: B.GripperClose, label: "Close" },

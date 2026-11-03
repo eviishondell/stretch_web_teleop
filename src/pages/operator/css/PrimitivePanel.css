@@ -171,3 +171,125 @@
 .primitive-panel__secondary > * {
     flex-shrink: 0;
 }
+
+/* Symbols *******************************************************************/
+/* The stock icons are light gray (drawn for dark pads). Inverting keeps
+   their internal detail — e.g. the forward/backward chevrons — legible on
+   white; active (filled) buttons show them as drawn. */
+.primitive-symbol {
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    object-fit: contain;
+    filter: invert(1) brightness(0.3);
+    pointer-events: none;
+}
+
+#operator button.primitive-command {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+#operator button.primitive-command.active .primitive-symbol {
+    filter: none;
+}
+
+/* Symbols-only: the symbol is the whole label, so give it more room. */
+.symbols-only .primitive-command .primitive-symbol {
+    width: 3.75rem;
+    height: 3.75rem;
+}
+
+.primitive-card--small .primitive-symbol {
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.primitive-card__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.primitive-symbol.title {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.primitive-panel__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.primitive-panel__heading .primitive-panel__phase {
+    margin: 0;
+}
+
+.primitive-panel__phase-symbols,
+.primitive-panel__suggestion-symbols {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.primitive-panel__phase-symbols .primitive-symbol {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+/* Suggestion: a "go" mark followed by the next primitives' symbols. */
+#operator button.primitive-panel__suggestion {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.primitive-panel__suggestion-go {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--spruce);
+    flex-shrink: 0;
+    /* right-pointing arrow */
+    -webkit-mask: none;
+    position: relative;
+}
+
+.primitive-panel__suggestion-go::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-top: 3px solid #ffffff;
+    border-right: 3px solid #ffffff;
+    transform: translate(-65%, -50%) rotate(45deg);
+}
+
+.primitive-panel__suggestion-symbols .primitive-symbol {
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.primitive-panel__suggestion-title {
+    flex-basis: 100%;
+}
+
+#operator button.primitive-panel__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.primitive-panel__toggle-mark {
+    font-size: 1.75rem;
+    line-height: 1;
+}

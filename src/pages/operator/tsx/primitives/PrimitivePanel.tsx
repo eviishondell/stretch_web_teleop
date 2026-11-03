@@ -8,9 +8,38 @@ import {
 import { SharedState } from "../layout_components/CustomizableComponent";
 import { notHomedDisabledFunctions } from "../layout_components/ButtonPad";
 import { Dropdown } from "../basic_components/Dropdown";
+import { getIcon } from "../utils/svg";
+import { ButtonPadButton } from "../function_providers/ButtonFunctionProvider";
 import { IntentPayload, TASK_PHASES } from "./intent";
 import { PRIMITIVES, PRIMITIVE_ORDER, PrimitiveId } from "./primitives";
 import "operator/css/PrimitivePanel.css";
+
+/**
+ * Symbol for a command. Decorative to assistive tech: the owning button
+ * always carries the spoken name via aria-label.
+ */
+const Symbol = (props: { command: ButtonPadButton; className?: string }) => {
+    const src = getIcon(props.command);
+    return src ? (
+        <img
+            src={src}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className={className("primitive-symbol", {
+                [props.className ?? ""]: !!props.className,
+            })}
+        />
+    ) : null;
+};
+
+/**
+ * Label display. Symbols are always shown; words are added only when the
+ * layout's "Display button text labels" option is on. That option is the
+ * hook onboarding will set from the person's ability profile — some users
+ * can't read, so symbols-first is the default.
+ */
+const showWords = (sharedState: SharedState) => !sharedState.hideLabels;
 
 /**
  * Layout renderer for task primitives. It only reads an IntentPayload —
@@ -30,10 +59,21 @@ export const PrimitivePanel = (props: {
 
     const active = payload.activePrimitives;
     const secondary = PRIMITIVE_ORDER.filter((id) => !active.includes(id));
+    const words = showWords(sharedState);
 
     return (
-        <section className="primitive-panel" aria-label="Task controls">
-            <h2 className="primitive-panel__phase">{payload.phaseLabel}</h2>
+        <section
+            className={className("primitive-panel", { "symbols-only": !words })}
+            aria-label="Task controls"
+        >
+            <div className="primitive-panel__heading">
+                <h2 className="primitive-panel__phase">{payload.phaseLabel}</h2>
+                <span className="primitive-panel__phase-symbols">
+                    {active.map((id) => (
+                        <Symbol key={id} command={PRIMITIVES[id].symbol} />
+                    ))}
+                </span>
+            </div>
 
             <div className="primitive-panel__active">
                 {active.map((id) => (
@@ -50,18 +90,23 @@ export const PrimitivePanel = (props: {
                 <button
                     type="button"
                     className="primitive-panel__suggestion"
+                    aria-label={`Done here? Go to ${payload.suggestion.label}`}
                     onClick={() =>
                         props.onAcceptSuggestion(payload.suggestion!.id)
                     }
                 >
-                    <span className="primitive-panel__suggestion-title">
-                        Done here? Go to {payload.suggestion.label}
+                    <span
+                        className="primitive-panel__suggestion-go"
+                        aria-hidden="true"
+                    />
+                    <span className="primitive-panel__suggestion-symbols">
+                        {payload.likelyNext.map((id) => (
+                            <Symbol key={id} command={PRIMITIVES[id].symbol} />
+                        ))}
                     </span>
-                    {payload.likelyNext.length > 0 && (
-                        <span className="primitive-panel__suggestion-detail">
-                            {payload.likelyNext
-                                .map((id) => PRIMITIVES[id].label)
-                                .join(", ")}
+                    {words && (
+                        <span className="primitive-panel__suggestion-title">
+                            Done here? Go to {payload.suggestion.label}
                         </span>
                     )}
                 </button>
@@ -72,11 +117,23 @@ export const PrimitivePanel = (props: {
                     type="button"
                     className="primitive-panel__toggle"
                     aria-expanded={showSecondary}
+                    aria-label={
+                        showSecondary
+                            ? "Hide other controls"
+                            : `Show ${secondary.length} other controls`
+                    }
                     onClick={() => setShowSecondary(!showSecondary)}
                 >
-                    {showSecondary
-                        ? "− Hide other controls"
-                        : `+ Other controls (${secondary.length})`}
+                    <span
+                        className="primitive-panel__toggle-mark"
+                        aria-hidden="true"
+                    >
+                        {showSecondary ? "−" : "+"}
+                    </span>
+                    {words &&
+                        (showSecondary
+                            ? "Hide other controls"
+                            : `Other controls (${secondary.length})`)}
                 </button>
             )}
 
@@ -103,10 +160,14 @@ const PrimitiveCard = (props: {
     size: "large" | "small";
 }) => {
     const primitive = PRIMITIVES[props.id];
+    const words = showWords(props.sharedState);
     return (
         <div className={`primitive-card primitive-card--${props.size}`}>
-            <h3 className="primitive-card__title">{primitive.label}</h3>
-            <p className="primitive-card__goal">{primitive.goal}</p>
+            <h3 className="primitive-card__title">
+                <Symbol command={primitive.symbol} className="title" />
+                {primitive.label}
+            </h3>
+            {words && <p className="primitive-card__goal">{primitive.goal}</p>}
             <div className="primitive-card__commands">
                 {primitive.commands.map(({ command, label }) => {
                     const functs: ButtonFunctions =
@@ -122,6 +183,8 @@ const PrimitiveCard = (props: {
                             key={command}
                             type="button"
                             disabled={disabled}
+                            aria-label={label}
+                            title={label}
                             className={className("primitive-command", {
                                 [state]: true,
                             })}
@@ -129,7 +192,12 @@ const PrimitiveCard = (props: {
                             onPointerUp={functs.onRelease}
                             onPointerLeave={functs.onLeave}
                         >
-                            {label}
+                            <Symbol command={command} />
+                            {words && (
+                                <span className="primitive-command__label">
+                                    {label}
+                                </span>
+                            )}
                         </button>
                     );
                 })}
