@@ -38,12 +38,9 @@ import {
 } from "./utils/layout_helpers";
 import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
-import { useProfileState } from "./profiles/useProfileState";
-import { applyProfile, countSecondaryTabs } from "./profiles/filterLayout";
-import {
-    ProfileDropdown,
-    SecondaryControlsToggle,
-} from "./profiles/ProfileBar";
+import { useManualIntent } from "./primitives/intent";
+import { withoutHardwareControlTabs } from "./primitives/hardwareTabs";
+import { PrimitivePanel, TaskPhaseDropdown } from "./primitives/PrimitivePanel";
 import "operator/css/Operator.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot } from "./layout_components/HomeTheRobot";
@@ -55,13 +52,9 @@ export const Operator = (props: {
     storageHandler: StorageHandler;
 }) => {
     const [customizing, setCustomizing] = React.useState(false);
-    const {
-        profileId,
-        profile,
-        setProfileId,
-        showSecondary,
-        setShowSecondary,
-    } = useProfileState();
+    // Manual (Wizard-of-Oz) intent source. Swap for an inferred source
+    // later; it only needs to produce the same IntentPayload.
+    const { phaseId, setPhaseId, payload: intent } = useManualIntent();
     const [selectedPath, setSelectedPath] = React.useState<string | undefined>(
         undefined
     );
@@ -359,9 +352,9 @@ export const Operator = (props: {
                         FunctionProvider.velocityScale = newScale;
                     }}
                 />
-                <ProfileDropdown
-                    profileId={profileId}
-                    onProfileChange={setProfileId}
+                <TaskPhaseDropdown
+                    phaseId={phaseId}
+                    onChange={setPhaseId}
                     disabled={customizing}
                 />
                 <CustomizeButton
@@ -448,12 +441,6 @@ export const Operator = (props: {
                 </div>
             )}
             <div id="operator-global-controls">
-                <SecondaryControlsToggle
-                    showSecondary={showSecondary}
-                    onToggle={() => setShowSecondary(!showSecondary)}
-                    secondaryCount={countSecondaryTabs(layout.current, profile)}
-                    disabled={customizing}
-                />
                 <div
                     className={className("operator-pose-recorder", {
                         hideLabels: !layout.current.displayLabels,
@@ -475,15 +462,23 @@ export const Operator = (props: {
             </div>
             <div id="operator-body">
                 {/* Customize mode edits the stored layout by path, so it always
-                    sees the full layout; otherwise render the profile view. */}
+                    sees the full layout. With a task phase active, the
+                    hardware control tabs give way to the primitive panel. */}
                 <LayoutArea
                     layout={
-                        customizing
+                        customizing || !intent
                             ? layout.current
-                            : applyProfile(layout.current, profile, showSecondary)
+                            : withoutHardwareControlTabs(layout.current)
                     }
                     sharedState={sharedState}
                 />
+                {!customizing && intent && (
+                    <PrimitivePanel
+                        payload={intent}
+                        sharedState={sharedState}
+                        onAcceptSuggestion={setPhaseId}
+                    />
+                )}
             </div>
             <Sidebar
                 hidden={!customizing}

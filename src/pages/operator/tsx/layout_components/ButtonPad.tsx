@@ -34,7 +34,7 @@ type ButtonPadProps = CustomizableComponentProps & {
 };
 
 /** Set of buttons which are disabled when the robot is not homed. */
-const notHomedDisabledFunctions = new Set<ButtonPadButton>([
+export const notHomedDisabledFunctions = new Set<ButtonPadButton>([
     ButtonPadButton.ArmLower,
     ButtonPadButton.ArmLift,
     ButtonPadButton.ArmExtend,
