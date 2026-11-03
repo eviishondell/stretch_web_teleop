@@ -75,7 +75,15 @@ export const PrimitivePanel = (props: {
                 </span>
             </div>
 
-            <div className="primitive-panel__active">
+            {/* Columns = number of active primitives, so the rail fills the
+                screen without scrolling. NOTE: the camera/controls split and
+                these sizes are fixed for now; later they should adapt to the
+                ability profile (e.g. low vision needs a bigger camera view)
+                and to the task. */}
+            <div
+                className="primitive-panel__active"
+                style={{ "--cols": active.length } as React.CSSProperties}
+            >
                 {active.map((id) => (
                     <PrimitiveCard
                         key={id}
@@ -86,6 +94,23 @@ export const PrimitivePanel = (props: {
                 ))}
             </div>
 
+            {showSecondary && (
+                <div
+                    className="primitive-panel__secondary"
+                    style={{ "--cols": secondary.length } as React.CSSProperties}
+                >
+                    {secondary.map((id) => (
+                        <PrimitiveCard
+                            key={id}
+                            id={id}
+                            sharedState={sharedState}
+                            size="small"
+                        />
+                    ))}
+                </div>
+            )}
+
+            <div className="primitive-panel__footer">
             {payload.suggestion && (
                 <button
                     type="button"
@@ -136,19 +161,7 @@ export const PrimitivePanel = (props: {
                             : `Other controls (${secondary.length})`)}
                 </button>
             )}
-
-            {showSecondary && (
-                <div className="primitive-panel__secondary">
-                    {secondary.map((id) => (
-                        <PrimitiveCard
-                            key={id}
-                            id={id}
-                            sharedState={sharedState}
-                            size="small"
-                        />
-                    ))}
-                </div>
-            )}
+            </div>
         </section>
     );
 };

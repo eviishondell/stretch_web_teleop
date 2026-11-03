@@ -1,59 +1,121 @@
-/* Task control rail — sits beside the camera view. */
+/*
+ * Task control rail.
+ *
+ * Fits the screen with no scrolling: active primitives are columns and
+ * their buttons stretch to the available height; the secondary drawer
+ * opens as a compact strip that the active area makes room for.
+ *
+ * NOTE: the camera/controls split below is fixed for now. Later it should
+ * adapt to the ability profile (e.g. low vision → larger camera view) and
+ * to the task.
+ */
+
+/* Camera view gets ~30%, the rail ~70%. */
+#operator-body {
+    min-height: 0;
+    overflow: hidden;
+}
+
+#operator-body > #layout-area {
+    flex: 3 1 0;
+    min-width: 0;
+}
+
 .primitive-panel {
-    flex: 2 1 0;
-    min-width: 22rem;
-    max-width: 40rem;
+    flex: 7 1 0;
+    min-width: 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1.5rem 1.25rem;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: var(--r-surface);
-    overflow-y: auto;
+    overflow: hidden;
 }
 
-/* The one loud element: what you're doing right now. */
+/* Heading: the one loud element — what you're doing right now. */
+.primitive-panel__heading {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .primitive-panel__phase {
-    margin: 0 0 1.25rem;
-    font-size: 2.75rem;
+    margin: 0;
+    font-size: 2.5rem;
     line-height: 1;
     font-weight: 700;
     letter-spacing: -0.01em;
     color: var(--ink);
 }
 
-.primitive-panel__active,
-.primitive-panel__secondary {
+.primitive-panel__phase-symbols {
     display: flex;
-    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.primitive-panel__phase-symbols .primitive-symbol {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+/* Active primitives: one column each, filling the remaining height. */
+.primitive-panel__active {
+    flex: 1 1 0;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+    gap: 1.5rem;
 }
 
 .primitive-card {
-    padding: 1rem 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0.75rem;
     border-top: 1px solid var(--line);
 }
 
 .primitive-card__title {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0;
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 700;
 }
 
 .primitive-card__goal {
-    margin: 0.15rem 0 0.8rem;
+    flex: 0 0 auto;
+    margin: 0.1rem 0 0;
     color: var(--slate);
 }
 
+/* Buttons grow to fill the column, up to a comfortable maximum. */
 .primitive-card__commands {
+    flex: 1 1 0;
+    min-height: 0;
+    margin-top: 0.75rem;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(3.25rem, 15rem);
     gap: 0.6rem;
+    align-content: start;
 }
 
-/* Large, calm targets; paired opposites sit side by side. */
 #operator button.primitive-command {
-    min-height: 4.75rem;
-    font-size: 1.2rem;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.25rem;
+    font-size: 1.15rem;
     border: 2px solid var(--line);
     touch-action: none; /* keep press-and-hold from scrolling on touch */
     user-select: none;
@@ -80,14 +142,23 @@
     background: var(--paper);
 }
 
-/* Secondary drawer: smaller, quieter. */
+/* Secondary drawer: a compact strip, one column per primitive. */
+.primitive-panel__secondary {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--line);
+}
+
 .primitive-card--small {
-    padding: 0.75rem 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 .primitive-card--small .primitive-card__title {
-    font-size: 1.05rem;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
     color: var(--slate);
 }
 
@@ -95,21 +166,34 @@
     display: none;
 }
 
+.primitive-card--small .primitive-card__commands {
+    flex: 0 0 auto;
+    margin-top: 0.4rem;
+    grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr));
+    grid-auto-rows: 3.25rem;
+    gap: 0.4rem;
+}
+
 #operator .primitive-card--small button.primitive-command {
-    min-height: 3.5rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
     border-width: 1px;
 }
 
-/* Suggestion: confirmed by the user, never automatic. */
-#operator button.primitive-panel__suggestion {
+/* Footer: suggestion and drawer toggle share one row. */
+.primitive-panel__footer {
+    flex: 0 0 auto;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
-    margin-top: 0.5rem;
-    min-height: 4.25rem;
-    padding: 0.6rem 1.25rem;
+    gap: 0.75rem;
+}
+
+#operator button.primitive-panel__suggestion {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 4rem;
+    padding: 0.5rem 1.25rem;
     border: none;
     border-radius: var(--r-control);
     background: var(--spruce-soft);
@@ -121,144 +205,13 @@
     background: #d3e5df;
 }
 
-.primitive-panel__suggestion-title {
-    font-size: 1.15rem;
-}
-
-.primitive-panel__suggestion-detail {
-    font-weight: 400;
-    color: var(--ink);
-    opacity: 0.75;
-}
-
-#operator button.primitive-panel__toggle {
-    margin-top: auto;
-    align-self: stretch;
-    min-height: 3.25rem;
-    border: 1px dashed var(--line);
-    background: transparent;
-    color: var(--slate);
-}
-
-.primitive-panel__secondary {
-    margin-top: 0.5rem;
-}
-
-.primitive-panel__suggestion + .primitive-panel__toggle {
-    margin-top: 0.75rem !important;
-}
-
-.primitive-panel__suggestion + .primitive-panel__toggle:not([aria-expanded="true"]) {
-    margin-top: auto !important;
-}
-
-/* Header task picker */
-.task-phase-dropdown.disabled {
-    opacity: 0.45;
-    pointer-events: none;
-}
-
-@media (max-width: 1100px) {
-    .primitive-panel__phase {
-        font-size: 2.1rem;
-    }
-}
-
-/* Stock styles set min-height: 0 on everything; stop the rail's contents
-   from squeezing together so the panel scrolls instead. */
-.primitive-panel > *,
-.primitive-panel__active > *,
-.primitive-panel__secondary > * {
-    flex-shrink: 0;
-}
-
-/* Symbols *******************************************************************/
-/* The stock icons are light gray (drawn for dark pads). Inverting keeps
-   their internal detail — e.g. the forward/backward chevrons — legible on
-   white; active (filled) buttons show them as drawn. */
-.primitive-symbol {
-    display: block;
-    width: 3rem;
-    height: 3rem;
-    object-fit: contain;
-    filter: invert(1) brightness(0.3);
-    pointer-events: none;
-}
-
-#operator button.primitive-command {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-}
-
-#operator button.primitive-command.active .primitive-symbol {
-    filter: none;
-}
-
-/* Symbols-only: the symbol is the whole label, so give it more room. */
-.symbols-only .primitive-command .primitive-symbol {
-    width: 3.75rem;
-    height: 3.75rem;
-}
-
-.primitive-card--small .primitive-symbol {
-    width: 2.25rem;
-    height: 2.25rem;
-}
-
-.primitive-card__title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.primitive-symbol.title {
-    width: 1.75rem;
-    height: 1.75rem;
-}
-
-.primitive-panel__heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-}
-
-.primitive-panel__heading .primitive-panel__phase {
-    margin: 0;
-}
-
-.primitive-panel__phase-symbols,
-.primitive-panel__suggestion-symbols {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.primitive-panel__phase-symbols .primitive-symbol {
-    width: 2.5rem;
-    height: 2.5rem;
-}
-
-/* Suggestion: a "go" mark followed by the next primitives' symbols. */
-#operator button.primitive-panel__suggestion {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
-}
-
 .primitive-panel__suggestion-go {
+    position: relative;
+    flex-shrink: 0;
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
     background: var(--spruce);
-    flex-shrink: 0;
-    /* right-pointing arrow */
-    -webkit-mask: none;
-    position: relative;
 }
 
 .primitive-panel__suggestion-go::after {
@@ -273,23 +226,100 @@
     transform: translate(-65%, -50%) rotate(45deg);
 }
 
+.primitive-panel__suggestion-symbols {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .primitive-panel__suggestion-symbols .primitive-symbol {
     width: 2.25rem;
     height: 2.25rem;
 }
 
 .primitive-panel__suggestion-title {
-    flex-basis: 100%;
+    font-size: 1.1rem;
 }
 
 #operator button.primitive-panel__toggle {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    min-width: 4.5rem;
+    min-height: 4rem;
+    padding: 0 1.25rem;
+    border: 1px dashed var(--line);
+    background: transparent;
+    color: var(--slate);
 }
 
 .primitive-panel__toggle-mark {
     font-size: 1.75rem;
     line-height: 1;
+}
+
+/* Symbols ******************************************************************/
+/* The stock icons are light gray (drawn for dark pads). Inverting keeps
+   their internal detail — e.g. the forward/backward chevrons — legible on
+   white; active (filled) buttons show them as drawn. */
+.primitive-symbol {
+    display: block;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    object-fit: contain;
+    filter: invert(1) brightness(0.3);
+    pointer-events: none;
+}
+
+#operator button.primitive-command.active .primitive-symbol {
+    filter: none;
+}
+
+/* Symbols-only: the symbol is the whole label, so give it more room. */
+.symbols-only .primitive-command .primitive-symbol {
+    width: 3.75rem;
+    height: 3.75rem;
+}
+
+.primitive-card--small .primitive-symbol,
+.symbols-only .primitive-card--small .primitive-command .primitive-symbol {
+    width: 2rem;
+    height: 2rem;
+}
+
+.primitive-symbol.title {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+/* Header task picker */
+.task-phase-dropdown.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Short screens: shrink type and symbols before anything overflows. */
+@media (max-height: 820px) {
+    .primitive-panel__phase {
+        font-size: 2rem;
+    }
+    .primitive-card__goal {
+        display: none;
+    }
+    .primitive-symbol {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    .symbols-only .primitive-command .primitive-symbol {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+/* The drawer is compact: symbols only there (each button keeps its name
+   as a tooltip and aria-label), so labels never clip. */
+.primitive-card--small .primitive-command__label {
+    display: none;
 }
