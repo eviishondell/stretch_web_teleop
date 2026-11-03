@@ -40,7 +40,10 @@ import { MovementRecorder } from "./layout_components/MovementRecorder";
 import { Alert } from "./basic_components/Alert";
 import { useProfileState } from "./profiles/useProfileState";
 import { applyProfile, countSecondaryTabs } from "./profiles/filterLayout";
-import { ProfileBar } from "./profiles/ProfileBar";
+import {
+    ProfileDropdown,
+    SecondaryControlsToggle,
+} from "./profiles/ProfileBar";
 import "operator/css/Operator.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot } from "./layout_components/HomeTheRobot";
@@ -356,6 +359,11 @@ export const Operator = (props: {
                         FunctionProvider.velocityScale = newScale;
                     }}
                 />
+                <ProfileDropdown
+                    profileId={profileId}
+                    onProfileChange={setProfileId}
+                    disabled={customizing}
+                />
                 <CustomizeButton
                     customizing={customizing}
                     onClick={handleToggleCustomize}
@@ -440,11 +448,9 @@ export const Operator = (props: {
                 </div>
             )}
             <div id="operator-global-controls">
-                <ProfileBar
-                    profileId={profileId}
-                    onProfileChange={setProfileId}
+                <SecondaryControlsToggle
                     showSecondary={showSecondary}
-                    onToggleSecondary={() => setShowSecondary(!showSecondary)}
+                    onToggle={() => setShowSecondary(!showSecondary)}
                     secondaryCount={countSecondaryTabs(layout.current, profile)}
                     disabled={customizing}
                 />

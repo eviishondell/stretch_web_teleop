@@ -1,73 +1,42 @@
-.profile-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: 12px;
-    padding: 8px 16px;
+/* Profile dropdown in the header — sized like the action-mode dropdown. */
+#operator-header .profile-dropdown {
+    width: var(--header-btn-width);
 }
 
-.profile-bar__profiles {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+#operator-header .profile-dropdown .dropdown {
+    width: 100%;
 }
 
-.profile-bar__profile,
+.profile-dropdown.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Secondary-controls toggle, shown below the header. */
 .profile-bar__toggle {
     min-height: 64px; /* generous target for dwell / switch selection */
     min-width: 140px;
-    padding: 8px 16px;
+    padding: 8px 24px;
     border: 2px solid #1f4462;
     border-radius: 8px;
     background: #ffffff;
     color: #1f4462;
     font: inherit;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: left;
-}
-
-.profile-bar__profile--active {
-    background: #1f4462;
-    color: #ffffff;
-}
-
-.profile-bar__name {
-    font-size: 1.15rem;
-    font-weight: 600;
-}
-
-.profile-bar__summary {
-    font-size: 0.85rem;
-    opacity: 0.85;
-}
-
-.profile-bar__toggle {
-    margin-left: auto;
-    align-items: center;
     font-size: 1.05rem;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .profile-bar__toggle[aria-expanded="true"] {
     background: #e6edf3;
 }
 
-.profile-bar button:focus-visible {
+.profile-bar__toggle:focus-visible {
     outline: 4px solid #f2a93b;
     outline-offset: 2px;
 }
 
-.profile-bar button:disabled {
+.profile-bar__toggle:disabled {
     opacity: 0.45;
     cursor: not-allowed;
-}
-
-/* Sits in #operator-global-controls; take the full row above other tools. */
-#operator-global-controls > .profile-bar {
-    flex-basis: 100%;
-    box-sizing: border-box;
 }
