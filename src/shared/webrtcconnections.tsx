@@ -267,20 +267,23 @@ export class WebRTCConnection extends React.Component {
                     this.isSettingRemoteAnswerPending = false;
                     if (!this.peerConnection)
                         throw "peerConnection is undefined";
-                    if (sessionDescription?.type === "offer") {
-                        return this.peerConnection.setLocalDescription();
-                    } else {
-                        return false;
-                    }
-                })
-                .then(() => {
-                    if (!this.peerConnection?.localDescription)
-                        throw "peerConnection is undefined";
+                    // Only an offer needs a reply. Previously, receiving an
+                    // ANSWER also re-sent our own local description (the
+                    // offer) back to the peer, which answered it again and
+                    // left this side with "Cannot set remote answer in
+                    // state stable".
+                    if (sessionDescription?.type !== "offer") return;
+                    await this.peerConnection.setLocalDescription();
+                    if (!this.peerConnection.localDescription)
+                        throw "localDescription is undefined";
                     this.signaler.send({
                         sessionDescription:
                             this.peerConnection.localDescription,
                     });
-                });
+                })
+                .catch((err) =>
+                    console.error("Failed to apply remote description:", err),
+                );
         } else if (candidate !== undefined && this.peerConnection) {
             // Note that the last candidate will be null, so we check whether
             // the candidate variable is defined at all versus being truthy.
