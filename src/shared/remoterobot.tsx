@@ -24,7 +24,11 @@ import {
     ROSPose,
     waitUntil,
 } from "shared/util";
-import { GetHasBetaTeleopKit, GetStretchTool } from "./commands";
+import {
+    GetHasBetaTeleopKit,
+    GetStretchTool,
+    TapToGoCommand,
+} from "./commands";
 export type robotMessageChannel = (message: cmd) => void;
 
 export class RemoteRobot extends React.Component<{}, any> {
@@ -161,6 +165,10 @@ export class RemoteRobot extends React.Component<{}, any> {
             horizontal: horizontal,
         };
         this.robotChannel(cmd);
+    }
+
+    tapToGo(command: Omit<TapToGoCommand, "type">) {
+        this.robotChannel({ type: "tapToGo", ...command });
     }
 
     showTablet() {

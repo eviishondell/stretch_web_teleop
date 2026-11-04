@@ -117,7 +117,23 @@ export type WebRTCMessage =
     | IsRunStoppedMessage
     | HasBetaTeleopKitMessage
     | StretchToolMessage
+    | TapToGoStatusMessage
     | cmd;
+
+/** Status published by nodes/tap_to_go.py on /tap_to_go/status. */
+export interface TapToGoStatus {
+    id: number;
+    state: "planned" | "moving" | "arrived" | "failed" | "cancelled";
+    message: string;
+    turn_deg?: number;
+    drive_m?: number;
+    target?: "floor" | "object";
+}
+
+export interface TapToGoStatusMessage {
+    type: "tapToGoStatus";
+    status: TapToGoStatus;
+}
 
 interface StopTrajectoryMessage {
     type: "stopTrajectory";

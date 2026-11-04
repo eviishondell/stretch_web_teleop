@@ -50,6 +50,8 @@ export const PrimitivePanel = (props: {
     payload: IntentPayload;
     sharedState: SharedState;
     onAcceptSuggestion: (id: string) => void;
+    /** Shown when the phase involves driving: switch to tap to go. */
+    onUseTapToGo?: () => void;
 }) => {
     const { payload, sharedState } = props;
     const [showSecondary, setShowSecondary] = React.useState(false);
@@ -73,6 +75,22 @@ export const PrimitivePanel = (props: {
                         <Symbol key={id} command={PRIMITIVES[id].symbol} />
                     ))}
                 </span>
+                {props.onUseTapToGo && (
+                    <button
+                        type="button"
+                        className="primitive-panel__mode"
+                        aria-label="Tap to go: tap a spot on the camera instead"
+                        title="Tap to go"
+                        onClick={props.onUseTapToGo}
+                    >
+                        <svg viewBox="0 0 48 48" aria-hidden="true">
+                            <circle cx="24" cy="18" r="9" />
+                            <circle cx="24" cy="18" r="3" className="dot" />
+                            <path d="M24 30v12M18 36l6 6 6-6" />
+                        </svg>
+                        {words && <span>Tap to go</span>}
+                    </button>
+                )}
             </div>
 
             {/* Columns = number of active primitives, so the rail fills the

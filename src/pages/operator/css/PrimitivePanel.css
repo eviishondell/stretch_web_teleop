@@ -439,3 +439,29 @@
         padding-top: 0;
     }
 }
+
+/* "Tap to go" switch in the rail heading */
+#operator button.primitive-panel__mode {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 3rem;
+    padding: 0 0.9rem;
+    border: 2px solid var(--line);
+    font-size: clamp(0.85rem, 1.6cqi, 1rem);
+}
+
+#operator button.primitive-panel__mode svg {
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#operator button.primitive-panel__mode svg .dot {
+    fill: currentColor;
+}

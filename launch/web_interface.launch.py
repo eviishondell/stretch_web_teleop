@@ -553,6 +553,17 @@ def generate_launch_description():
         )
         ld.add_action(move_to_pregrasp_node)
 
+    # Tap to go: tap a spot on the head camera, confirm, and the base drives there.
+    # Needs only the head camera's depth, so it runs for every tool.
+    tap_to_go_node = Node(
+        package="stretch_web_teleop",
+        executable="tap_to_go.py",
+        output="screen",
+        arguments=[LaunchConfiguration("params")],
+        parameters=[],
+    )
+    ld.add_action(tap_to_go_node)
+
     # Text to speech
     text_to_speech_node = Node(
         package="stretch_web_teleop",

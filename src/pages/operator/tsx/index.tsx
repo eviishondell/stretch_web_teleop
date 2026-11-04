@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
+import { tapToGoFunctionProvider } from "./function_providers/TapToGoFunctionProvider";
 import { WebRTCConnection } from "shared/webrtcconnections";
 import {
     WebRTCMessage,
@@ -212,6 +213,9 @@ function handleWebRTCMessage(message: WebRTCMessage | WebRTCMessage[]) {
         case "showTabletState":
             console.log("showTabletState", message.message);
             underVideoFunctionProvider.setShowTabletState(message.message);
+            break;
+        case "tapToGoStatus":
+            tapToGoFunctionProvider.setStatus(message.status);
             break;
         case "relativePose":
             remoteRobot.setRelativePose(message.message);

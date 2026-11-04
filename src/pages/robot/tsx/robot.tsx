@@ -10,7 +10,9 @@ import {
     ActionState,
     ActionStatusList,
     ROSBatteryState,
+    TapToGoStatus,
 } from "shared/util";
+import { TapToGoCommand } from "shared/commands";
 import {
     rosJointStatetoRobotPose,
     ValidJointStateDict,
@@ -81,6 +83,8 @@ export class Robot extends React.Component {
     private stretchToolParam: ROSLIB.Param;
     private textToSpeechTopic?: ROSLIB.Topic;
     private homeTheRobotService?: ROSLIB.Service;
+    private tapToGoCommandTopic?: ROSLIB.Topic;
+    private tapToGoStatusCallback?: (status: TapToGoStatus) => void;
 
     constructor(props: {
         jointStateCallback: (
@@ -99,6 +103,7 @@ export class Robot extends React.Component {
         isRunStoppedCallback: (isRunStopped: boolean) => void;
         hasBetaTeleopKitCallback: (value: boolean) => void;
         stretchToolCallback: (value: string) => void;
+        tapToGoStatusCallback?: (status: TapToGoStatus) => void;
     }) {
         super(props);
         this.jointStateCallback = props.jointStateCallback;
@@ -113,6 +118,7 @@ export class Robot extends React.Component {
         this.isRunStoppedCallback = props.isRunStoppedCallback;
         this.hasBetaTeleopKitCallback = props.hasBetaTeleopKitCallback;
         this.stretchToolCallback = props.stretchToolCallback;
+        this.tapToGoStatusCallback = props.tapToGoStatusCallback;
     }
 
     setOnRosConnectCallback(callback: () => Promise<void>) {
@@ -301,6 +307,7 @@ export class Robot extends React.Component {
         this.subscribeToMapTF();
         this.createTextToSpeechTopic();
         this.createHomeTheRobotService();
+        this.createTapToGoTopics();
 
         return Promise.resolve();
     }
@@ -596,6 +603,39 @@ export class Robot extends React.Component {
             name: "/stretch/cmd_vel",
             messageType: "geometry_msgs/Twist",
         });
+    }
+
+    /** Tap to go (nodes/tap_to_go.py): JSON commands out, JSON statuses in. */
+    createTapToGoTopics() {
+        this.tapToGoCommandTopic = new ROSLIB.Topic({
+            ros: this.ros,
+            name: "/tap_to_go/command",
+            messageType: "std_msgs/String",
+        });
+        const statusTopic: ROSLIB.Topic<{ data: string }> = new ROSLIB.Topic({
+            ros: this.ros,
+            name: "/tap_to_go/status",
+            messageType: "std_msgs/String",
+        });
+        this.subscriptions.push(statusTopic);
+        statusTopic.subscribe((msg) => {
+            try {
+                const status = JSON.parse(msg.data) as TapToGoStatus;
+                if (this.tapToGoStatusCallback) this.tapToGoStatusCallback(status);
+            } catch (e) {
+                console.error("Malformed tap_to_go status", msg.data, e);
+            }
+        });
+    }
+
+    sendTapToGoCommand(command: TapToGoCommand) {
+        if (!this.tapToGoCommandTopic) throw "tapToGoCommandTopic is undefined";
+        const { type, ...payload } = command;
+        this.tapToGoCommandTopic.publish(
+            new ROSLIB.Message({ data: JSON.stringify(payload) }),
+        );
+        // An autonomous motion may change the robot's mode.
+        if (command.action === "execute") robotMode = "unknown";
     }
 
     createTextToSpeechTopic() {

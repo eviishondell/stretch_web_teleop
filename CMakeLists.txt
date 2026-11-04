@@ -40,6 +40,7 @@ install(PROGRAMS
   nodes/compressed_image_visualizer.py
   nodes/configure_video_streams.py
   nodes/move_to_pregrasp.py
+  nodes/tap_to_go.py
   nodes/navigation_camera.py
   nodes/text_to_speech.py
   nodes/text_to_speech_ui.py

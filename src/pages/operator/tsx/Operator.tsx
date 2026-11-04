@@ -42,6 +42,11 @@ import { useManualIntent } from "./primitives/intent";
 import { layoutForOperation } from "./primitives/layoutFilters";
 import { SafetyControls } from "./static_components/SafetyControls";
 import { PrimitivePanel, TaskPhaseDropdown } from "./primitives/PrimitivePanel";
+import {
+    phaseSupportsTapToGo,
+    useTravelPresentation,
+} from "./primitives/presentation";
+import { TapToGoView } from "./primitives/TapToGoView";
 import "operator/css/Operator.css";
 // Theme last: it overrides the stock styles above.
 import "operator/css/Theme.css";
@@ -58,6 +63,8 @@ export const Operator = (props: {
     // Manual (Wizard-of-Oz) intent source. Swap for an inferred source
     // later; it only needs to produce the same IntentPayload.
     const { phaseId, setPhaseId, payload: intent } = useManualIntent();
+    // How travel is presented (later set by the ability profile)
+    const { travel, setTravel } = useTravelPresentation();
     const [selectedPath, setSelectedPath] = React.useState<string | undefined>(
         undefined
     );
@@ -469,22 +476,43 @@ export const Operator = (props: {
                     sees the full layout. While operating, safety moves to the
                     header and, with a task phase active, the hardware control
                     tabs give way to the primitive panel. */}
-                <LayoutArea
-                    layout={
-                        customizing
-                            ? layout.current
-                            : layoutForOperation(layout.current, {
-                                  hideHardwareControls: !!intent,
-                              })
-                    }
-                    sharedState={sharedState}
-                />
-                {!customizing && intent && (
-                    <PrimitivePanel
-                        payload={intent}
-                        sharedState={sharedState}
-                        onAcceptSuggestion={setPhaseId}
+                {!customizing &&
+                intent &&
+                travel === "tapToGo" &&
+                phaseSupportsTapToGo(intent.activePrimitives) ? (
+                    <TapToGoView
+                        stream={remoteStreams.get("realsense")?.stream}
+                        phaseLabel={intent.phaseLabel}
+                        showWords={!!layout.current.displayLabels}
+                        onUseButtons={() => setTravel("buttons")}
                     />
+                ) : (
+                    <>
+                        <LayoutArea
+                            layout={
+                                customizing
+                                    ? layout.current
+                                    : layoutForOperation(layout.current, {
+                                          hideHardwareControls: !!intent,
+                                      })
+                            }
+                            sharedState={sharedState}
+                        />
+                        {!customizing && intent && (
+                            <PrimitivePanel
+                                payload={intent}
+                                sharedState={sharedState}
+                                onAcceptSuggestion={setPhaseId}
+                                onUseTapToGo={
+                                    phaseSupportsTapToGo(
+                                        intent.activePrimitives,
+                                    )
+                                        ? () => setTravel("tapToGo")
+                                        : undefined
+                                }
+                            />
+                        )}
+                    </>
                 )}
             </div>
             <Sidebar

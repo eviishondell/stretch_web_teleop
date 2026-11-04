@@ -25,6 +25,11 @@
   <exec_depend>pcl_ros</exec_depend>
   <exec_depend>image_publisher</exec_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
+  <!-- tap_to_go.py -->
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>

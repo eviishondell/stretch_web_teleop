@@ -24,7 +24,8 @@ export type cmd =
     | StopTextToSpeech
     | ShowTabletCommand
     | StopShowTabletCommand
-    | HomeTheRobotCommand;
+    | HomeTheRobotCommand
+    | TapToGoCommand;
 
 export interface VelocityCommand {
     stop: () => void;
@@ -109,6 +110,20 @@ export interface MoveToPregraspCommand {
     type: "moveToPregrasp";
     x: number;
     y: number;
+}
+
+/**
+ * Tap to go: plan a base motion to a tapped spot on the head camera, then
+ * execute it only after the operator confirms. See nodes/tap_to_go.py.
+ */
+export interface TapToGoCommand {
+    type: "tapToGo";
+    action: "plan" | "execute" | "cancel";
+    /** Ties statuses to the request that caused them. */
+    id: number;
+    /** Tap position on the streamed head-camera image, in [0, 1]. */
+    scaled_u?: number;
+    scaled_v?: number;
 }
 
 export interface StopMoveToPregraspCommand {

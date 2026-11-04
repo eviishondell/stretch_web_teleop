@@ -24,6 +24,8 @@ import {
     ROSBatteryState,
     BatteryVoltageMessage,
     delay,
+    TapToGoStatus,
+    TapToGoStatusMessage,
 } from "shared/util";
 import { AllVideoStreamComponent, VideoStream } from "./videostreams";
 import { AudioStream } from "./audiostreams";
@@ -50,6 +52,7 @@ export const robot = new Robot({
     isRunStoppedCallback: forwardIsRunStopped,
     hasBetaTeleopKitCallback: forwardHasBetaTeleopKit,
     stretchToolCallback: forwardStretchTool,
+    tapToGoStatusCallback: forwardTapToGoStatus,
 });
 
 export let connection: WebRTCConnection;
@@ -132,6 +135,14 @@ function handleSessionStart() {
         .forEach((track) => connection.addTrack(track, stream, "audio"));
 
     connection.openDataChannels();
+}
+
+function forwardTapToGoStatus(status: TapToGoStatus) {
+    if (!connection) throw "WebRTC connection undefined!";
+    connection.sendData({
+        type: "tapToGoStatus",
+        status: status,
+    } as TapToGoStatusMessage);
 }
 
 function forwardActionState(state: ActionState, type: string) {
@@ -330,6 +341,9 @@ function handleMessage(message: WebRTCMessage) {
             break;
         case "stopMoveToPregrasp":
             robot.stopMoveToPregraspClient();
+            break;
+        case "tapToGo":
+            robot.sendTapToGoCommand(message);
             break;
         case "getStretchTool":
             robot.getStretchTool();
