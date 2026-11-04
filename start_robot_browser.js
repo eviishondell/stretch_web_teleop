@@ -27,6 +27,7 @@ const listenConsole = async (page) => {
         INF: chalk.cyan,
     };
 
+    page.on("pageerror", (err) => console.log(chalk.red(`PAGE ERROR: ${err.message}`)));
     // listen to browser console
     page.on("console", async (msg) => {
         const args = await Promise.all(msg.args().map((arg) => describe(arg)));
