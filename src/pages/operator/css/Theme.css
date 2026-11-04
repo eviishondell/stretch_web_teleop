@@ -268,7 +268,6 @@ body {
 }
 
 #operator-body > #layout-area {
-    flex: 3 1 0;
     padding: 0;
 }
 
@@ -364,4 +363,153 @@ body {
 #operator-header .dropdown {
     width: auto;
     min-width: 11rem;
+}
+
+/* Page grid: the body row may shrink, never overflow. ***********************/
+#operator {
+    grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+#operator-body {
+    min-height: 0;
+}
+
+/* Camera views **************************************************************/
+/* The picture takes all the room its panel has, at the stream's real
+   shape; the buttons under it stay compact. */
+#operator .tabs-component {
+    container-type: inline-size;
+    min-height: 0;
+}
+
+#operator .tabs-content {
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    min-height: 0;
+}
+
+#operator .video-container {
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    grid-template-columns: minmax(0, 1fr);
+    /* row 1 unused; row 2 = picture (inline style); row 3 = buttons */
+    grid-template-rows: 0 minmax(0, 1fr) auto;
+    row-gap: 0;
+    justify-items: stretch;
+}
+
+#operator .video-area {
+    container-type: size;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    min-height: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Largest box with the stream's aspect ratio that fits the area */
+    --video-w: min(100cqw, 100cqh * var(--video-ar, 1.333));
+    --video-h: min(100cqh, 100cqw / var(--video-ar, 1.333));
+}
+
+#operator .video-area > video.video-canvas,
+#operator .video-area > video.video-canvas.constrainedHeight {
+    flex: none;
+    width: var(--video-w);
+    height: var(--video-h);
+    max-width: none;
+    object-fit: fill;
+    border-radius: 8px;
+    background: #1b2426;
+}
+
+/* Overlays sit exactly on the picture, not on the empty area around it. */
+#operator .video-area > .realsense-pan-tilt-grid,
+#operator .video-area > .realsense-pan-tilt-grid.constrainedHeight,
+#operator .video-area > .video-overlay-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--video-w);
+    height: var(--video-h);
+    transform: translate(-50%, -50%);
+}
+
+#operator .video-area > .video-overlay-container.realsense,
+#operator .video-area > .video-overlay-container.overhead {
+    width: max(0px, calc(var(--video-w) - 102px));
+    height: max(0px, calc(var(--video-h) - 102px));
+}
+
+#operator .under-video-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+    overflow: visible;
+    font-size: clamp(0.8rem, 2.4cqi, 1rem);
+}
+
+#operator .under-video-area > * {
+    min-width: 0;
+}
+
+#operator .under-video-area button {
+    width: 100%;
+    margin: 0;
+    min-height: 2.75rem;
+    padding: 0.25rem 0.6rem;
+    font-size: inherit;
+    line-height: 1.15;
+}
+
+/* Narrow windows: header wraps onto two rows instead of crushing. ***********/
+@media (max-width: 1100px) {
+    #operator-header {
+        height: auto;
+        flex-wrap: wrap;
+        row-gap: 0.5rem;
+    }
+    #operator-header > *,
+    #operator-header button,
+    #operator-header .dropdown,
+    #operator-header .task-phase-dropdown {
+        height: 3rem;
+    }
+    #velocity-control-container {
+        order: 10;
+        flex: 1 0 100%;
+        margin: 0;
+    }
+    #operator #velocity-control-container button {
+        flex: 1;
+        width: auto;
+    }
+}
+
+/* Pan/tilt arrows float on the picture: no button chrome. */
+#operator .realsense-pan-tilt-grid button,
+#operator .realsense-pan-tilt-grid button:hover {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#operator .realsense-pan-tilt-grid .panTiltIcon {
+    width: clamp(1.75rem, 9cqi, 3rem);
+    height: clamp(1.75rem, 9cqi, 3rem);
+}
+
+#operator .under-video-area .dropdown,
+#operator .under-video-area .dropdown-button {
+    height: auto;
+    min-height: 2.75rem;
 }

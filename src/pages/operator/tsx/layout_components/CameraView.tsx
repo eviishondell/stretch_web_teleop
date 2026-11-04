@@ -111,6 +111,10 @@ export const CameraView = (props: CustomizableComponentProps) => {
           ? definition.children[0]
           : undefined;
     const videoAspectRatio = getVideoAspectRatio(definition);
+    // The stream's real shape, read from the video once frames arrive. The
+    // configured ratio is only a starting guess (rotated cameras differ).
+    const [streamAspect, setStreamAspect] =
+        React.useState<number>(videoAspectRatio);
     const overlay = createOverlay(
         overlayDefinition,
         props.path,
@@ -122,6 +126,23 @@ export const CameraView = (props: CustomizableComponentProps) => {
     React.useEffect(() => {
         if (!videoRef?.current) return;
         videoRef.current.srcObject = stream;
+    }, [stream]);
+
+    // Track the stream's intrinsic size so the layout can fit it exactly
+    React.useEffect(() => {
+        const video = videoRef?.current;
+        if (!video) return;
+        const update = () => {
+            if (video.videoWidth && video.videoHeight)
+                setStreamAspect(video.videoWidth / video.videoHeight);
+        };
+        video.addEventListener("loadedmetadata", update);
+        video.addEventListener("resize", update);
+        update();
+        return () => {
+            video.removeEventListener("loadedmetadata", update);
+            video.removeEventListener("resize", update);
+        };
     }, [stream]);
 
     const { customizing } = props.sharedState;
@@ -298,7 +319,13 @@ export const CameraView = (props: CustomizableComponentProps) => {
     const videoComponent = (
         <div
             className="video-area"
-            style={{ gridRow: 2, gridColumn: 1 }}
+            style={
+                {
+                    gridRow: 2,
+                    gridColumn: 1,
+                    "--video-ar": streamAspect,
+                } as React.CSSProperties
+            }
             ref={videoAreaRef}
         >
             {videoOverlay}
@@ -313,8 +340,10 @@ export const CameraView = (props: CustomizableComponentProps) => {
                 <AddIcon
                     style={{
                         position: "absolute",
-                        left: (selectObjectScaledXY[0] * 100).toString() + "%",
-                        top: (selectObjectScaledXY[1] * 100).toString() + "%",
+                        // Relative to the picture, which may be centered
+                        // inside a larger area (falls back to the area).
+                        left: `calc(50% + ${selectObjectScaledXY[0] - 0.5} * var(--video-w, 100%))`,
+                        top: `calc(50% + ${selectObjectScaledXY[1] - 0.5} * var(--video-h, 100%))`,
                         color: "red",
                         transform: "translateX(-50%) translateY(-50%)",
                     }}
