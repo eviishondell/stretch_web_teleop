@@ -11,12 +11,12 @@
  */
 
 /* Camera view gets ~30%, the rail ~70%. */
-#operator-body {
+#operator #operator-body {
     min-height: 0;
     overflow: hidden;
 }
 
-#operator-body > #layout-area {
+#operator #operator-body > #layout-area {
     flex: 1 1 0;
     min-width: 0;
 }
@@ -382,10 +382,10 @@
 
 /* Narrow or tall windows: stack the camera above the controls. */
 @media (max-width: 1000px), (max-aspect-ratio: 1/1) {
-    #operator-body {
+    #operator #operator-body {
         flex-direction: column;
     }
-    #operator-body > #layout-area {
+    #operator #operator-body > #layout-area {
         flex: 1 1 0;
         min-height: 0;
     }
@@ -420,7 +420,7 @@
 /* Stacked layout: camera buttons sit beside the picture, not under it,
    so the picture keeps its height; the camera gets a bit more room. */
 @media (max-width: 1000px), (max-aspect-ratio: 1/1) {
-    #operator-body > #layout-area {
+    #operator #operator-body > #layout-area {
         flex: 1.25 1 0;
     }
     .primitive-panel {

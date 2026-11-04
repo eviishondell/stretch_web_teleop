@@ -41,9 +41,10 @@ import { Alert } from "./basic_components/Alert";
 import { useManualIntent } from "./primitives/intent";
 import { layoutForOperation } from "./primitives/layoutFilters";
 import { SafetyControls } from "./static_components/SafetyControls";
-import "operator/css/Theme.css";
 import { PrimitivePanel, TaskPhaseDropdown } from "./primitives/PrimitivePanel";
 import "operator/css/Operator.css";
+// Theme last: it overrides the stock styles above.
+import "operator/css/Theme.css";
 import { TextToSpeech } from "./layout_components/TextToSpeech";
 import { HomeTheRobot } from "./layout_components/HomeTheRobot";
 

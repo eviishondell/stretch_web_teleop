@@ -70,7 +70,7 @@ body {
 }
 
 /* Header ********************************************************************/
-#operator-header {
+#operator #operator-header {
     background: var(--paper);
     border-bottom: 1px solid var(--line);
     height: var(--header-h);
@@ -79,13 +79,13 @@ body {
     justify-content: flex-start;
 }
 
-#operator-header > *,
-#operator-header button {
+#operator #operator-header > *,
+#operator #operator-header button {
     height: 100%;
 }
 
 /* Speed: one segmented control rather than five loose buttons */
-#velocity-control-container {
+#operator #velocity-control-container {
     display: flex;
     margin: 0 auto;
     border: 1px solid var(--line);
@@ -145,8 +145,8 @@ body {
     font-weight: 700;
 }
 
-#operator-header .task-phase-dropdown,
-#operator-header .dropdown {
+#operator #operator-header .task-phase-dropdown,
+#operator #operator-header .dropdown {
     width: 12.5rem;
     height: 100%;
 }
@@ -261,13 +261,13 @@ body {
 }
 
 /* Body **********************************************************************/
-#operator-body {
+#operator #operator-body {
     align-items: stretch;
     gap: var(--gap);
     padding: var(--gap);
 }
 
-#operator-body > #layout-area {
+#operator #operator-body > #layout-area {
     padding: 0;
 }
 
@@ -324,13 +324,13 @@ body {
 
 /* Header fit: never wrap labels; drop the battery wording before anything
    else when space runs out (the cells and aria-label remain). */
-#operator-header button,
+#operator #operator-header button,
 .battery-chip {
     white-space: nowrap;
 }
 
-#operator-header .task-phase-dropdown,
-#operator-header .dropdown {
+#operator #operator-header .task-phase-dropdown,
+#operator #operator-header .dropdown {
     width: 11rem;
 }
 
@@ -359,8 +359,8 @@ body {
 }
 
 /* Size dropdowns to their longest label so the chevron never clips. */
-#operator-header .task-phase-dropdown,
-#operator-header .dropdown {
+#operator #operator-header .task-phase-dropdown,
+#operator #operator-header .dropdown {
     width: auto;
     min-width: 11rem;
 }
@@ -370,7 +370,7 @@ body {
     grid-template-rows: auto auto minmax(0, 1fr);
 }
 
-#operator-body {
+#operator #operator-body {
     min-height: 0;
 }
 
@@ -470,18 +470,18 @@ body {
 
 /* Narrow windows: header wraps onto two rows instead of crushing. ***********/
 @media (max-width: 1100px) {
-    #operator-header {
+    #operator #operator-header {
         height: auto;
         flex-wrap: wrap;
         row-gap: 0.5rem;
     }
-    #operator-header > *,
-    #operator-header button,
-    #operator-header .dropdown,
-    #operator-header .task-phase-dropdown {
+    #operator #operator-header > *,
+    #operator #operator-header button,
+    #operator #operator-header .dropdown,
+    #operator #operator-header .task-phase-dropdown {
         height: 3rem;
     }
-    #velocity-control-container {
+    #operator #velocity-control-container {
         order: 10;
         flex: 1 0 100%;
         margin: 0;
@@ -512,4 +512,82 @@ body {
 #operator .under-video-area .dropdown-button {
     height: auto;
     min-height: 2.75rem;
+}
+
+/* Several cameras in one tab ************************************************/
+/* The first camera is the main view, spanning the panel; the others share a
+   smaller row beneath it. Reorder cameras in Customize to pick the main one.
+   (Main vs. secondary camera should later come from the task and ability
+   profile.) */
+#operator .tabs-content:has(> .video-container ~ .video-container) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.9fr) minmax(0, 1.2fr);
+    grid-auto-flow: row dense;
+}
+
+#operator .tabs-content:has(> :nth-child(3 of .video-container)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#operator .tabs-content:has(> :nth-child(4 of .video-container)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#operator .tabs-content:has(> .video-container ~ .video-container)
+    > .video-container:nth-child(1 of .video-container) {
+    grid-column: 1 / -1;
+}
+
+/* Secondary views: compact buttons so the picture keeps its space. */
+#operator .tabs-content:has(> .video-container ~ .video-container)
+    > .video-container:not(:nth-child(1 of .video-container))
+    .under-video-area {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+    padding-top: 0.3rem;
+    font-size: 0.72rem;
+}
+
+#operator .tabs-content:has(> .video-container ~ .video-container)
+    > .video-container:not(:nth-child(1 of .video-container))
+    .video-area {
+    min-height: 4rem;
+}
+
+#operator .tabs-content:has(> .video-container ~ .video-container)
+    > .video-container:not(:nth-child(1 of .video-container))
+    .under-video-area button {
+    min-height: 2.25rem;
+    padding: 0.15rem 0.3rem;
+}
+
+/* Stacked layout + several cameras: the panel is wide and short, so put
+   them side by side with buttons underneath. */
+@media (max-width: 1000px), (max-aspect-ratio: 1/1) {
+    #operator .tabs-content:has(> .video-container ~ .video-container) {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    #operator .tabs-content:has(> .video-container ~ .video-container)
+        > .video-container {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: 0 minmax(0, 1fr) auto;
+    }
+    #operator .tabs-content:has(> .video-container ~ .video-container)
+        .under-video-area {
+        grid-row: 3;
+        grid-column: 1;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+        padding-top: 0.4rem;
+    }
+}
+
+/* A stock rule turns the camera panel into a column on portrait-shaped
+   windows; keep cameras side by side in the stacked layout. */
+#operator .tabs-content {
+    flex-direction: row;
 }
