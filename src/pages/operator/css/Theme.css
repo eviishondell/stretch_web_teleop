@@ -591,3 +591,10 @@ body {
 #operator .tabs-content {
     flex-direction: row;
 }
+
+/* Hidden drop zones (shown only while customizing) are collapsed rather
+   than removed by the stock CSS, so they still claim grid cells and flex
+   gaps. Take them out of layout entirely. */
+#operator .drop-zone[hidden] {
+    display: none;
+}
